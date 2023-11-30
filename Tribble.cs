@@ -31,6 +31,23 @@ namespace Animation_with_Classes
             _color = new Color(Convert.ToByte(generator.Next(255)), Convert.ToByte(generator.Next(255)), Convert.ToByte(generator.Next(255)));
         }
 
+        public Tribble(Texture2D texture, Rectangle rectangle, Vector2 speed, Song song)
+        {
+            _texture = texture;
+            _rectangle = rectangle;
+            _speed = speed;
+            _song = song;
+        }
+
+        public Tribble(Texture2D texture, Rectangle rectangle, Vector2 speed, Song song, Color color)
+        {
+            _color = color;
+            _texture = texture;
+            _rectangle = rectangle;
+            _speed = speed;
+            _song = song;
+        }
+
         public Texture2D Texture
         {
             get { return _texture; }
