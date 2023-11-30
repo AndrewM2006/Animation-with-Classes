@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection.Emit;
 
 namespace Animation_with_Classes
@@ -16,7 +17,17 @@ namespace Animation_with_Classes
         Song bling;
         int amount;
         Texture2D tribbleGreyTexture;
+        Texture2D tribbleBGTexture;
+        SpriteFont pressKey;
+        Texture2D shipBGTexture;
         List <Tribble> tribbles = new List<Tribble> ();
+
+        enum Screen
+        {
+            Intro,
+            Tribbles
+        }
+        Screen screen;
         public Game1()
         {
             _graphics = new GraphicsDeviceManager(this);
@@ -33,9 +44,9 @@ namespace Animation_with_Classes
         {
             // TODO: Add your initialization logic here
             base.Initialize();
-            amount = 3;
+            screen = Screen.Intro;
+            amount = 20;
             Random generator = new Random();
-            this.bling = Content.Load<Song>("Bling");
             for (int i = 0; i < amount; i++)
             {
                 tribbles.Add(new Tribble(tribbleGreyTexture, bling));
@@ -47,7 +58,11 @@ namespace Animation_with_Classes
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
             // TODO: use this.Content to load your game content here
+            tribbleBGTexture = Content.Load<Texture2D>("TribblesBG");
+            this.bling = Content.Load<Song>("Bling");
             tribbleGreyTexture = Content.Load<Texture2D>("tribbleGrey");
+            shipBGTexture = Content.Load<Texture2D>("Ship");
+            pressKey = Content.Load<SpriteFont>("PressKey");
         }
         protected override void Update(GameTime gameTime)
         {
@@ -56,9 +71,20 @@ namespace Animation_with_Classes
 
             // TODO: Add your update logic here
 
-            for (int i = 0; i < amount; i++)
+            if (screen == Screen.Intro)
             {
-                tribbles[i].Move(_graphics);
+                var keys = Keyboard.GetState().GetPressedKeys();
+                if (keys.Count() > 0)
+                {
+                    screen = Screen.Tribbles;
+                }
+            }
+            else if (screen == Screen.Tribbles)
+            {
+                for (int i = 0; i < amount; i++)
+                {
+                    tribbles[i].Move(_graphics);
+                }
             }
             base.Update(gameTime);
         }
@@ -69,9 +95,18 @@ namespace Animation_with_Classes
 
             // TODO: Add your drawing code here
             _spriteBatch.Begin();
-            for (int i = 0;i < amount;i++)
+            if (screen == Screen.Intro)
             {
-                _spriteBatch.Draw(tribbles[i].Texture, tribbles[i].Bounds, tribbles[i].Color);
+                _spriteBatch.Draw(tribbleBGTexture, new Rectangle(0, 0, _graphics.PreferredBackBufferWidth, _graphics.PreferredBackBufferHeight), Color.White);
+                _spriteBatch.DrawString(pressKey,"Press any Key to Advance", new Vector2(20, 340), Color.Red);
+            }
+            else if (screen == Screen.Tribbles)
+            {
+                _spriteBatch.Draw(shipBGTexture, new Rectangle(0, 0, _graphics.PreferredBackBufferWidth, _graphics.PreferredBackBufferHeight), Color.White);
+                for (int i = 0; i < amount; i++)
+                {
+                    tribbles[i].Draw(_spriteBatch);
+                }
             }
             _spriteBatch.End();
             base.Draw(gameTime);
